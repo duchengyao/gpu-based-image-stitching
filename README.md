@@ -10,6 +10,8 @@ Speed of 4 cameras at 4k resolution is greater than 200fps in 1080ti.
 
 This project does not provide a dataset so it cannot be used out of the box.
 
+一个使用 OpenCV 进行快速全景视频拼接的方法。通过巧妙的流并行策略，在 1080ti 上可以对 4k 视频进行超过 200fps 的图像拼接。
+
 ## 0x01 Quick Start
 * Modify calibration file.
 
