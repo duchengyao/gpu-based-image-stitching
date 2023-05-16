@@ -36,8 +36,8 @@ App::App() {
     first_image_vector[i].copyTo(first_mat_vector[i]);
   }
 
-  StitchingParamGenerater stitching_param_generater(first_mat_vector);
-  stitching_param_generater.GetReprojParams(undist_xmap_vector,
+  StitchingParamGenerator stitching_param_generator(first_mat_vector);
+  stitching_param_generator.GetReprojParams(undist_xmap_vector,
                                             undist_ymap_vector,
                                             reproj_xmap_vector,
                                             reproj_ymap_vector,

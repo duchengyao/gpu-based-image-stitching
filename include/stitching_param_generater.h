@@ -10,9 +10,9 @@
 
 using namespace std;
 
-class StitchingParamGenerater {
+class StitchingParamGenerator {
  public:
-    explicit StitchingParamGenerater(const vector<cv::Mat>& image_vector);
+    explicit StitchingParamGenerator(const vector<cv::Mat>& image_vector);
 
     void GetReprojParams(vector<cv::UMat>& undist_xmap_vector,
                          vector<cv::UMat>& undist_ymap_vector,

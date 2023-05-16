@@ -19,7 +19,7 @@ using namespace cv::detail;
 #define LOGLN(msg) std::cout << msg << std::endl
 
 
-StitchingParamGenerater::StitchingParamGenerater(
+StitchingParamGenerator::StitchingParamGenerator(
     const vector<cv::Mat>& image_vector) {
   num_img_ = image_vector.size();
 
@@ -57,7 +57,7 @@ StitchingParamGenerater::StitchingParamGenerater(
   InitWarper();
 }
 
-void StitchingParamGenerater::InitCameraParam() {
+void StitchingParamGenerator::InitCameraParam() {
   Ptr<Feature2D> finder;
   finder = SIFT::create();
   vector<ImageFeatures> features(num_img_);
@@ -142,7 +142,7 @@ void StitchingParamGenerater::InitCameraParam() {
 }
 
 
-void StitchingParamGenerater::InitWarper() {
+void StitchingParamGenerator::InitWarper() {
 
   vector<double> focals;
   float median_focal_length;
@@ -308,7 +308,7 @@ void StitchingParamGenerater::InitWarper() {
 }
 
 
-void StitchingParamGenerater::InitUndistortMap() {
+void StitchingParamGenerator::InitUndistortMap() {
   std::vector<double> cam_focal_vector(num_img_);
 
   std::vector<cv::UMat> r_vector(num_img_);
@@ -352,7 +352,7 @@ void StitchingParamGenerater::InitUndistortMap() {
 
 }
 
-void StitchingParamGenerater::GetReprojParams(
+void StitchingParamGenerator::GetReprojParams(
     vector<cv::UMat>& undist_xmap_vector,
     vector<cv::UMat>& undist_ymap_vector,
     vector<cv::UMat>& reproj_xmap_vector,

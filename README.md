@@ -1,8 +1,9 @@
 ## 0x00 Intro
 
 > This project is a simple implementation of opencv for the following papers.
-> 
-> Du, Chengyao, et al. (2020). GPU based parallel optimization for real time panoramic video stitching. Pattern Recognition Letters, 133, 62-69.
+>
+> Du, Chengyao, et al. (2020). GPU based parallel optimization for real time panoramic video stitching. Pattern
+> Recognition Letters, 133, 62-69.
 
 Fast panorama stitching method using UMat.
 
@@ -13,20 +14,7 @@ This project does not provide a dataset so it cannot be used out of the box.
 一个使用 OpenCV 进行快速全景视频拼接的方法。通过巧妙的流并行策略，在 1080ti 上可以对 4k 视频进行超过 200fps 的图像拼接。
 
 ## 0x01 Quick Start
-* Modify calibration file.
 
-* Create Dataset(or use RTSP stream input by modifying the code slightly). 
-```
-├── results
-└── datasets
-    └── air-4cam-mp4
-        ├── 00.MP4
-        ├── 01.MP4
-        ├── 02.MP4
-        └── 03.MP4
-```
-
-* Run
 ```
 $ mkdir build && cd build
 $ cmake ..
@@ -34,7 +22,11 @@ $ make
 $ ./image-stitching
 ```
 
-## 0x02 Exposure Refine
+## 0x02 Example
+
+| 00.mp4                    | 01.mp4                    | 02.mp4                    | 03.mp4                    |
+|---------------------------|---------------------------|---------------------------|---------------------------|
+| ![](assets/origin-00.png) | ![](assets/origin-01.png) | ![](assets/origin-02.png) | ![](assets/origin-03.png) |
 
 origin-stitching  
 ![](assets/01.origin-stitching.png)

@@ -36,7 +36,7 @@ SensorDataInterface::SensorDataInterface()
 void SensorDataInterface::InitVideoCapture(size_t& num_img) {
   std::string video_dir = "../datasets/air-4cam-mp4/";
   std::vector<std::string> video_file_name = {
-      "00.MP4", "01.MP4", "02.MP4", "03.MP4"};
+      "00.mp4", "01.mp4", "02.mp4", "03.mp4"};
 
   num_img_ = video_file_name.size();
   num_img = num_img_;
