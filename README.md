@@ -28,7 +28,7 @@ $ ./image-stitching
 |---------------------------|---------------------------|---------------------------|---------------------------|
 | ![](assets/origin-00.png) | ![](assets/origin-01.png) | ![](assets/origin-02.png) | ![](assets/origin-03.png) |
 
-origin-stitching  
+stitching  
 ![](assets/01.origin-stitching.png)
 
 exposure-mask  
@@ -40,6 +40,6 @@ exposure-mask-refine
 apply-mask
 ![](assets/04.apply-mask.png)
 
-final-stitching
+final-panorama
 ![](assets/05.final-stitching.png)
 
