@@ -24,6 +24,8 @@ $ ./image-stitching
 
 ## 0x02 Example
 
+> About these procedure below (chinese) http://s1nh.com/post/image-stitching-post-process/ .
+
 | 00.mp4                    | 01.mp4                    | 02.mp4                    | 03.mp4                    |
 |---------------------------|---------------------------|---------------------------|---------------------------|
 | ![](assets/origin-00.png) | ![](assets/origin-01.png) | ![](assets/origin-02.png) | ![](assets/origin-03.png) |
