@@ -71,13 +71,15 @@ void SensorDataInterface::RecordVideos() {
         image_queue_mutex_vector_[i].lock();
         image_queue_vector_[i].push(frame);
         if (image_queue_vector_[i].size() > max_queue_length_) {
-          image_queue_vector_[i].pop();
+          std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
         image_queue_mutex_vector_[i].unlock();
+      } else {
+        break;
       }
     }
     frame_idx++;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+//    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
   }
 }
@@ -92,9 +94,14 @@ SensorDataInterface::get_image_vector(
     cv::Mat img_undistort;
     cv::Mat img_cylindrical;
 
+    while (image_queue_vector_[i].empty()) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
     image_queue_mutex_vector_[i].lock();
     image_mutex_vector[i].lock();
     image_vector[i] = image_queue_vector_[i].front();
+    image_queue_vector_[i].pop();
     image_mutex_vector[i].unlock();
     image_queue_mutex_vector_[i].unlock();
   }
