@@ -9,7 +9,9 @@ Fast panorama stitching method using UMat.
 
 Speed of 4 cameras at 4k resolution is greater than 200fps in 1080ti.
 
-一个使用 OpenCV 进行快速全景视频拼接的方法。通过流并行策略，在 1080ti 上可以对 4k 视频进行超过 200fps 的图像拼接。
+This project does not provide a dataset so it cannot be used out of the box.
+
+一个使用 OpenCV 进行快速全景视频拼接的方法。通过巧妙的流并行策略，在 1080ti 上可以对 4k 视频进行超过 200fps 的图像拼接。
 
 ## 0x01 Quick Start
 
@@ -20,7 +22,15 @@ $ make
 $ ./image-stitching
 ```
 
-## 0x02 Example
+## 0x02 Known Issue
+
+* **`Real FPS` is much slower than `FPS`**: `imwrite` takes a lot of time.
+* **Stitching will never stop**: I didn't think about the way to use the dataset before, so I added a `dataset branch`. It will stop after stitching, but the program will not exit. The test set will generate 149 pictures.
+* **Wrong resolution changing intrinsic parameter (.yaml)**: See `TODO: Load resolution from camchain.yaml` in `stitching_param_generater.cc`.
+
+Welcome to pull requests!
+
+## 0x03 Example
 
 > About these procedure below (chinese) http://s1nh.com/post/image-stitching-post-process/ .
 
@@ -42,4 +52,3 @@ apply-mask
 
 final-panorama
 ![](assets/05.final-stitching.png)
-
