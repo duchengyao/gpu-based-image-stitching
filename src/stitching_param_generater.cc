@@ -70,7 +70,7 @@ void StitchingParamGenerator::InitCameraParam() {
     LOGLN(
         "Features in image #" << i + 1 << ": " << features[i].keypoints.size());
   }
-  LOG("Pairwise matching");
+  LOGLN("Pairwise matching");
   std::vector<MatchesInfo> pairwise_matches;
   Ptr<FeaturesMatcher> matcher;
   if (matcher_type == "affine")
@@ -304,6 +304,7 @@ void StitchingParamGenerator::InitUndistortMap() {
   std::vector<cv::UMat> r_vector(num_img_);
   std::vector<cv::UMat> k_vector(num_img_);
   std::vector<std::vector<double>> d_vector(num_img_);
+  cv::Size resolution;
 
   undist_xmap_vector_ = std::vector<cv::UMat>(num_img_);
   undist_ymap_vector_ = std::vector<cv::UMat>(num_img_);
@@ -324,6 +325,7 @@ void StitchingParamGenerator::InitUndistortMap() {
     fs_read["RMat"] >> R;
     R.copyTo(r_vector[i]);
     fs_read["focal"] >> cam_focal_vector[i];
+    fs_read["resolution"] >> resolution;
   }
 
   for (size_t i = 0; i < num_img_; i++) {
@@ -333,9 +335,8 @@ void StitchingParamGenerator::InitUndistortMap() {
     k_vector[i].convertTo(K, CV_32F);
     cv::UMat::eye(3, 3, CV_32F).convertTo(R, CV_32F);
 
-//    TODO: Load resolution from camchain.yaml
     cv::initUndistortRectifyMap(
-        K, d_vector[i], R, NONE, cv::Size(1920, 1080),
+        K, d_vector[i], R, NONE, resolution,
         CV_32FC1, undist_xmap_vector_[i], undist_ymap_vector_[i]);
   }
 }

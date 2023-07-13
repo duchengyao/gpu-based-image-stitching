@@ -104,13 +104,13 @@ void ImageStitcher::WarpImages(
 
   // Combine two remap operator (For speed up a little)
 
-  std::cout << "[WarpImages] Remapping" << img_idx << ":" << num_img_ << " ..." << std::endl;
+  std::cout << "[WarpImages] Remapping " << img_idx << ":" << num_img_ << " ..." << std::endl;
   remap(image_vector[img_idx],
         tmp_umat_vect_[img_idx],
         final_xmap_vector_[img_idx],
         final_ymap_vector_[img_idx],
         cv::INTER_LINEAR);
-  std::cout << "[WarpImages] Remapped" << img_idx << ":" << num_img_ << " ..." << std::endl;
+  std::cout << "[WarpImages] Remapped " << img_idx << ":" << num_img_ << " ..." << std::endl;
   image_mutex_vector[img_idx].unlock();
   t2 = cv::getTickCount();
   t3 = cv::getTickCount();
