@@ -1,6 +1,4 @@
-//
-// Created by s1nh.org on 2020/12/2.
-//
+// Created by s1nh.org.
 
 #ifndef IMAGE_STITCHING_APP_H
 #define IMAGE_STITCHING_APP_H
@@ -10,21 +8,18 @@
 #include "sensor_data_interface.h"
 #include "image_stitcher.h"
 
-using namespace std;
-
 class App {
- public:
-    App();
+public:
+  App();
 
-    [[noreturn]] void run_stitching();
+  [[noreturn]] void run_stitching();
 
- private:
-    std::size_t num_img_;
-    SensorDataInterface sensorDataInterface_;
-    ImageStitcher image_stitcher_;
-    vector<cv::Mat> image_vector_;
-    cv::UMat image_concat_umat_;
-    int total_cols_;
+private:
+  SensorDataInterface sensor_data_interface_;
+  ImageStitcher image_stitcher_;
+  std::vector<cv::Mat> image_vector_;
+  cv::UMat image_concat_umat_;
+  int total_cols_;
 
 };
 

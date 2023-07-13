@@ -1,7 +1,5 @@
-//
 // Created by s1nh.org on 2020/11/13.
 // Modified from samples/cpp/stitching_detailed.cpp
-//
 
 #include "stitching_param_generater.h"
 
@@ -9,39 +7,40 @@
 #include <fstream>
 #include <string>
 
+#define ENABLE_LOG 0
+#define LOG(msg) std::cout << msg
+#define LOGLN(msg) std::cout << msg << std::endl
 
 using namespace std;
 using namespace cv;
 using namespace cv::detail;
 
-#define ENABLE_LOG 0
-#define LOG(msg) std::cout << msg
-#define LOGLN(msg) std::cout << msg << std::endl
-
-
 StitchingParamGenerator::StitchingParamGenerator(
-    const vector<cv::Mat>& image_vector) {
+    const std::vector<cv::Mat>& image_vector) {
+
+  std::cout << "[StitchingParamGenerator] Initializing..." << std::endl;
+
   num_img_ = image_vector.size();
 
   image_vector_ = image_vector;
-  mask_vector_ = vector<cv::UMat>(num_img_);
-  mask_warped_vector_ = vector<cv::UMat>(num_img_);
-  image_size_vector_ = vector<cv::Size>(num_img_);
-  image_warped_size_vector_ = vector<cv::Size>(num_img_);
-  reproj_xmap_vector_ = vector<cv::UMat>(num_img_);
-  reproj_ymap_vector_ = vector<cv::UMat>(num_img_);
+  mask_vector_ = std::vector<cv::UMat>(num_img_);
+  mask_warped_vector_ = std::vector<cv::UMat>(num_img_);
+  image_size_vector_ = std::vector<cv::Size>(num_img_);
+  image_warped_size_vector_ = std::vector<cv::Size>(num_img_);
+  reproj_xmap_vector_ = std::vector<cv::UMat>(num_img_);
+  reproj_ymap_vector_ = std::vector<cv::UMat>(num_img_);
   camera_params_vector_ =
-      vector<cv::detail::CameraParams>(camera_params_vector_);
+      std::vector<cv::detail::CameraParams>(camera_params_vector_);
 
-//      projected_image_bbox_ = vector<cv::Rect>(num_img_);
-  projected_image_roi_vect_refined_ = vector<cv::Rect>(num_img_);
+//      projected_image_bbox_ = std::vector<cv::Rect>(num_img_);
+  projected_image_roi_vect_refined_ = std::vector<cv::Rect>(num_img_);
 
   for (size_t img_idx = 0; img_idx < num_img_; img_idx++) {
     image_size_vector_[img_idx] = image_vector_[img_idx].size();
   }
 
-  vector<cv::UMat> undist_xmap_vector;
-  vector<cv::UMat> undist_ymap_vector;
+  std::vector<cv::UMat> undist_xmap_vector;
+  std::vector<cv::UMat> undist_ymap_vector;
 
   InitUndistortMap();
 
@@ -55,13 +54,16 @@ StitchingParamGenerator::StitchingParamGenerator(
 
   InitCameraParam();
   InitWarper();
+
+  std::cout << "[StitchingParamGenerator] Initialized." << std::endl;
+
 }
 
 void StitchingParamGenerator::InitCameraParam() {
   Ptr<Feature2D> finder;
   finder = SIFT::create();
-  vector<ImageFeatures> features(num_img_);
-  vector<Size> full_img_sizes(num_img_);
+  std::vector<ImageFeatures> features(num_img_);
+  std::vector<Size> full_img_sizes(num_img_);
   for (int i = 0; i < num_img_; ++i) {
     computeImageFeatures(finder, image_vector_[i], features[i]);
     features[i].img_idx = i;
@@ -69,7 +71,7 @@ void StitchingParamGenerator::InitCameraParam() {
         "Features in image #" << i + 1 << ": " << features[i].keypoints.size());
   }
   LOG("Pairwise matching");
-  vector<MatchesInfo> pairwise_matches;
+  std::vector<MatchesInfo> pairwise_matches;
   Ptr<FeaturesMatcher> matcher;
   if (matcher_type == "affine")
     matcher = makePtr<AffineBestOf2NearestMatcher>(false, try_cuda, match_conf);
@@ -92,7 +94,7 @@ void StitchingParamGenerator::InitCameraParam() {
   else
     estimator = makePtr<HomographyBasedEstimator>();
   if (!(*estimator)(features, pairwise_matches, camera_params_vector_)) {
-    cout << "Homography estimation failed.\n";
+    std::cout << "Homography estimation failed.\n";
     assert(false);
   }
   for (auto& i : camera_params_vector_) {
@@ -110,9 +112,9 @@ void StitchingParamGenerator::InitCameraParam() {
         makePtr<detail::BundleAdjusterAffinePartial>();
   else if (ba_cost_func == "no") adjuster = makePtr<NoBundleAdjuster>();
   else {
-    cout << "Unknown bundle adjustment cost function: '"
-         << ba_cost_func
-         << "'.\n";
+    std::cout << "Unknown bundle adjustment cost function: '"
+              << ba_cost_func
+              << "'.\n";
     assert(false);
   }
   adjuster->setConfThresh(conf_thresh);
@@ -124,13 +126,13 @@ void StitchingParamGenerator::InitCameraParam() {
   if (ba_refine_mask[4] == 'x') refine_mask(1, 2) = 1;
   adjuster->setRefinementMask(refine_mask);
   if (!(*adjuster)(features, pairwise_matches, camera_params_vector_)) {
-    cout << "Camera parameters adjusting failed.\n";
+    std::cout << "Camera parameters adjusting failed.\n";
     assert(false);
   }
 
-  vector<Mat> rmats;
-  for (size_t i = 0; i < camera_params_vector_.size(); ++i)
-    rmats.push_back(camera_params_vector_[i].R.clone());
+  std::vector<Mat> rmats;
+  for (auto& i : camera_params_vector_)
+    rmats.push_back(i.R.clone());
   waveCorrect(rmats, wave_correct);
   for (size_t i = 0; i < camera_params_vector_.size(); ++i) {
     camera_params_vector_[i].R = rmats[i];
@@ -141,14 +143,11 @@ void StitchingParamGenerator::InitCameraParam() {
   }
 }
 
-
 void StitchingParamGenerator::InitWarper() {
 
-  vector<double> focals;
+  std::vector<double> focals;
   float median_focal_length;
-  reproj_xmap_vector_ = vector<UMat>(num_img_);
-  reproj_xmap_vector_ = vector<UMat>(num_img_);
-
+  reproj_xmap_vector_ = std::vector<UMat>(num_img_);
 
   for (size_t i = 0; i < camera_params_vector_.size(); ++i) {
     LOGLN("Camera #" << i + 1 << ":\nK:\n" << camera_params_vector_[i].K()
@@ -161,8 +160,7 @@ void StitchingParamGenerator::InitWarper() {
   else
     median_focal_length =
         static_cast<float>(focals[focals.size() / 2 - 1] +
-                           focals[focals.size() / 2]) * 0.5f;
-
+            focals[focals.size() / 2]) * 0.5f;
 
   Ptr<WarperCreator> warper_creator;
 #ifdef HAVE_OPENCV_CUDAWARPING
@@ -193,11 +191,9 @@ void StitchingParamGenerator::InitWarper() {
     else if (warp_type == "compressedPlaneA1.5B1")
       warper_creator = makePtr<cv::CompressedRectilinearWarper>(1.5f, 1.0f);
     else if (warp_type == "compressedPlanePortraitA2B1")
-      warper_creator =
-          makePtr<cv::CompressedRectilinearPortraitWarper>(2.0f, 1.0f);
+      warper_creator = makePtr<cv::CompressedRectilinearPortraitWarper>(2.0f, 1.0f);
     else if (warp_type == "compressedPlanePortraitA1.5B1")
-      warper_creator =
-          makePtr<cv::CompressedRectilinearPortraitWarper>(1.5f, 1.0f);
+      warper_creator = makePtr<cv::CompressedRectilinearPortraitWarper>(1.5f, 1.0f);
     else if (warp_type == "paniniA2B1")
       warper_creator = makePtr<cv::PaniniWarper>(2.0f, 1.0f);
     else if (warp_type == "paniniA1.5B1")
@@ -212,16 +208,15 @@ void StitchingParamGenerator::InitWarper() {
       warper_creator = makePtr<cv::TransverseMercatorWarper>();
   }
   if (!warper_creator) {
-    cout << "Can't create the following warper '" << warp_type << "'\n";
+    std::cout << "Can't create the following warper '" << warp_type << "'\n";
     assert(false);
   }
   rotation_warper_ =
       warper_creator->create(static_cast<float>(median_focal_length));
   LOGLN("warped_image_scale: " << median_focal_length);
 
-
   Rect rect;
-  vector<cv::Point> image_point_vect(num_img_);
+  std::vector<cv::Point> image_point_vect(num_img_);
 
   for (int img_idx = 0; img_idx < num_img_; ++img_idx) {
     Mat_<float> K;
@@ -231,7 +226,6 @@ void StitchingParamGenerator::InitWarper() {
                                        reproj_xmap_vector_[img_idx],
                                        reproj_ymap_vector_[img_idx]);
     Point point(rect.x, rect.y);
-
     image_point_vect[img_idx] = point;
   }
 
@@ -246,16 +240,14 @@ void StitchingParamGenerator::InitWarper() {
           reproj_ymap_vector_[img_idx],
           INTER_NEAREST);
     image_warped_size_vector_[img_idx] = mask_warped_vector_[img_idx].size();
-
   }
-
 
   timelapser_ = Timelapser::createDefault(timelapse_type);
   blender_ = Blender::createDefault(Blender::NO);
   timelapser_->initialize(image_point_vect, image_size_vector_);
   blender_->prepare(image_point_vect, image_size_vector_);
 
-  vector<cv::Rect> projected_image_roi_vect = vector<cv::Rect>(num_img_);
+  std::vector<cv::Rect> projected_image_roi_vect = std::vector<cv::Rect>(num_img_);
 
   // Update corners and sizes
   // TODO(duchengyao): Figure out what bias means.
@@ -266,7 +258,7 @@ void StitchingParamGenerator::InitWarper() {
     Mat K;
     camera_params_vector_[i].K().convertTo(K, CV_32F);
     Rect roi = rotation_warper_->warpRoi(sz, K, camera_params_vector_[i].R);
-    cout << "roi" << roi << endl;
+    std::cout << "roi" << roi << std::endl;
     roi_tl_bias.x = min(roi.tl().x, roi_tl_bias.x);
     roi_tl_bias.y = min(roi.tl().y, roi_tl_bias.y);
     projected_image_roi_vect[i] = roi;
@@ -296,17 +288,15 @@ void StitchingParamGenerator::InitWarper() {
 
     Rect rect_left = projected_image_roi_vect_refined_[i];
     int offset = (projected_image_roi_vect[i].br().x -
-                  projected_image_roi_vect[i + 1].tl().x) / 2;
+        projected_image_roi_vect[i + 1].tl().x) / 2;
     rect_left.width -= offset;
     Rect rect_right = projected_image_roi_vect[i + 1];
     rect_right.width -= offset;
     rect_right.x = offset;
     projected_image_roi_vect_refined_[i] = rect_left;
     projected_image_roi_vect_refined_[i + 1] = rect_right;
-
   }
 }
-
 
 void StitchingParamGenerator::InitUndistortMap() {
   std::vector<double> cam_focal_vector(num_img_);
@@ -324,8 +314,7 @@ void StitchingParamGenerator::InitUndistortMap() {
 
         cv::FileStorage::READ);
     if (!fs_read.isOpened()) {
-      fprintf(stderr, "%s:%d:loadParams falied. 'camera.yml' does not exist\n",
-              __FILE__, __LINE__);
+      fprintf(stderr, "%s:%d:loadParams falied. 'camera.yml' does not exist\n", __FILE__, __LINE__);
       return;
     }
     cv::Mat R, K;
@@ -349,21 +338,18 @@ void StitchingParamGenerator::InitUndistortMap() {
         K, d_vector[i], R, NONE, cv::Size(1920, 1080),
         CV_32FC1, undist_xmap_vector_[i], undist_ymap_vector_[i]);
   }
-
 }
 
 void StitchingParamGenerator::GetReprojParams(
-    vector<cv::UMat>& undist_xmap_vector,
-    vector<cv::UMat>& undist_ymap_vector,
-    vector<cv::UMat>& reproj_xmap_vector,
-    vector<cv::UMat>& reproj_ymap_vector,
-    vector<cv::Rect>& projected_image_roi_vect_refined) {
-
+    std::vector<cv::UMat>& undist_xmap_vector,
+    std::vector<cv::UMat>& undist_ymap_vector,
+    std::vector<cv::UMat>& reproj_xmap_vector,
+    std::vector<cv::UMat>& reproj_ymap_vector,
+    std::vector<cv::Rect>& projected_image_roi_vect_refined) {
 
   undist_xmap_vector = undist_xmap_vector_;
   undist_ymap_vector = undist_ymap_vector_;
   reproj_xmap_vector = reproj_xmap_vector_;
   reproj_ymap_vector = reproj_ymap_vector_;
   projected_image_roi_vect_refined = projected_image_roi_vect_refined_;
-
 }

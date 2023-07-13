@@ -1,7 +1,5 @@
-//
-// Created by s1nh.org on 11/11/20.
+// Created by s1nh.org..
 // https://zhuanlan.zhihu.com/p/38136322
-//
 
 #include "sensor_data_interface.h"
 
@@ -13,33 +11,30 @@ SensorDataInterface::SensorDataInterface()
   num_img_ = 0;
 }
 
-//void SensorDataInterface::InitExampleImages() {
-//  std::string img_dir = "../datasets/cam01/pic_raw/";
-//  std::vector<std::string> img_file_name = {"0.jpg",
-//                                            "1.jpg",
-//                                            "2.jpg",
-//                                            "3.jpg",
-//                                            "4.jpg"};
-//
-//  num_img_ = img_file_name.size();
-//  image_queue_vector_ = std::vector<std::queue<cv::UMat>>(num_img_);
-//
-//  for (int i = 0; i < img_file_name.size(); ++i) {
-//    std::string file_name = img_dir + img_file_name[i];
-//    cv::UMat _;
-//    cv::imread(file_name, 1).copyTo(_);
-//    image_queue_vector_[i].push(_);
-//  }
-//}
+void SensorDataInterface::InitExampleImages() {
+  std::string img_dir = "../datasets/cam01/pic_raw/";
+  std::vector<std::string> img_file_name = {
+      "0.jpg", "1.jpg", "2.jpg", "3.jpg", "4.jpg"};
 
+  num_img_ = img_file_name.size();
+  image_queue_vector_ = std::vector<std::queue<cv::UMat>>(num_img_);
 
-void SensorDataInterface::InitVideoCapture(size_t& num_img) {
+  for (int i = 0; i < img_file_name.size(); ++i) {
+    std::string file_name = img_dir + img_file_name[i];
+    cv::UMat _;
+    cv::imread(file_name, 1).copyTo(_);
+    image_queue_vector_[i].push(_);
+  }
+}
+
+void SensorDataInterface::InitVideoCapture() {
+  std::cout << "Initializing video capture..." << std::endl;
+
   std::string video_dir = "../datasets/air-4cam-mp4/";
   std::vector<std::string> video_file_name = {
       "00.mp4", "01.mp4", "02.mp4", "03.mp4"};
 
   num_img_ = video_file_name.size();
-  num_img = num_img_;
   image_queue_vector_ = std::vector<std::queue<cv::UMat>>(num_img_);
   image_queue_mutex_vector_ = std::vector<std::mutex>(num_img_);
 
@@ -49,19 +44,17 @@ void SensorDataInterface::InitVideoCapture(size_t& num_img) {
 
     cv::VideoCapture capture(file_name);
     if (!capture.isOpened())
-      std::cout << "fail to open!" << std::endl;
+      std::cout << "Failed to open capture " << i << std::endl;
     video_capture_vector_.push_back(capture);
 
     cv::UMat frame;
     capture.read(frame);
     image_queue_vector_[i].push(frame);
-
   }
+  std::cout << "Done. " << num_img_ << " captures initialized." << std::endl;
 }
 
-
-void SensorDataInterface::RecordVideos() {
-
+[[noreturn]] void SensorDataInterface::RecordVideos() {
   size_t frame_idx = 0;
   while (true) {
     for (int i = 0; i < num_img_; ++i) {
@@ -76,18 +69,17 @@ void SensorDataInterface::RecordVideos() {
         image_queue_mutex_vector_[i].unlock();
       }
     }
+    std::cout << "[RecordVideos] recorded frame " << frame_idx << "." << std::endl;
     frame_idx++;
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
   }
 }
 
-
-void
-SensorDataInterface::get_image_vector(
+void SensorDataInterface::get_image_vector(
     std::vector<cv::UMat>& image_vector,
     std::vector<std::mutex>& image_mutex_vector) {
 
+  std::cout << "[SensorDataInterface] Getting new images...";
   for (size_t i = 0; i < num_img_; ++i) {
     cv::Mat img_undistort;
     cv::Mat img_cylindrical;
@@ -98,4 +90,6 @@ SensorDataInterface::get_image_vector(
     image_mutex_vector[i].unlock();
     image_queue_mutex_vector_[i].unlock();
   }
+  std::cout << " Done." << std::endl;
+
 }
