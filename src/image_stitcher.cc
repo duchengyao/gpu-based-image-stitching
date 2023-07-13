@@ -83,7 +83,7 @@ void ImageStitcher::WarpImages(
     std::vector<cv::UMat>& images_warped_with_roi_vector,
     cv::UMat& image_concat_umat) {
 
-  std::cout << "[ImageStitcher] Warping images " << img_idx << " of " << num_img_ << "..." << std::endl;
+  std::cout << "[WarpImages] Warping images " << img_idx << " of " << num_img_ << "..." << std::endl;
   int64_t t0, t1, t2, t3, t4, t5, t6, tn;
   t0 = cv::getTickCount();
   image_mutex_vector[img_idx].lock();
@@ -102,12 +102,15 @@ void ImageStitcher::WarpImages(
 //        reproj_ymap_vector_[img_idx],
 //        cv::INTER_LINEAR);
 
-//  // Combine two remap operator (For speed up a little bit)
+  // Combine two remap operator (For speed up a little)
+
+  std::cout << "[WarpImages] Remapping" << img_idx << ":" << num_img_ << " ..." << std::endl;
   remap(image_vector[img_idx],
         tmp_umat_vect_[img_idx],
         final_xmap_vector_[img_idx],
         final_ymap_vector_[img_idx],
         cv::INTER_LINEAR);
+  std::cout << "[WarpImages] Remapped" << img_idx << ":" << num_img_ << " ..." << std::endl;
   image_mutex_vector[img_idx].unlock();
   t2 = cv::getTickCount();
   t3 = cv::getTickCount();
@@ -148,7 +151,7 @@ void ImageStitcher::WarpImages(
       image_concat_umat(cv::Rect(cols, 0, roi_vect_[img_idx].width, roi_vect_[img_idx].height)));
 
   tn = cv::getTickCount();
-  std::cout << "[ImageStitcher] Warped images " << img_idx << " of " << num_img_ << ". ("
+  std::cout << "[WarpImages] Warped images " << img_idx << " of " << num_img_ << ". ("
             << double(t1 - t0) / cv::getTickFrequency() << ";"
             << double(t2 - t1) / cv::getTickFrequency() << ";"
             << double(t3 - t2) / cv::getTickFrequency() << ";"

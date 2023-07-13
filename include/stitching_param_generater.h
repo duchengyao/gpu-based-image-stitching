@@ -14,7 +14,7 @@ public:
                        std::vector<cv::UMat>& undist_ymap_vector,
                        std::vector<cv::UMat>& reproj_xmap_vector,
                        std::vector<cv::UMat>& reproj_ymap_vector,
-                       std::vector<cv::Rect>& projected_image_roi_vect_refined);
+                       std::vector<cv::Rect>& projected_image_roi_refined_vect);
 
   void InitCameraParam();
 
@@ -59,7 +59,7 @@ private:
   std::vector<cv::UMat> undist_xmap_vector_, undist_ymap_vector_;
 
   std::vector<cv::detail::CameraParams> camera_params_vector_;
-  std::vector<cv::Rect> projected_image_roi_vect_refined_;
+  std::vector<cv::Rect> projected_image_roi_refined_vect_;
   cv::Ptr<cv::detail::RotationWarper> rotation_warper_;
   cv::Ptr<cv::detail::Timelapser> timelapser_;
   cv::Ptr<cv::detail::Blender> blender_;

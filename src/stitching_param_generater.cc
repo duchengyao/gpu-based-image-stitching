@@ -33,7 +33,7 @@ StitchingParamGenerator::StitchingParamGenerator(
       std::vector<cv::detail::CameraParams>(camera_params_vector_);
 
 //      projected_image_bbox_ = std::vector<cv::Rect>(num_img_);
-  projected_image_roi_vect_refined_ = std::vector<cv::Rect>(num_img_);
+  projected_image_roi_refined_vect_ = std::vector<cv::Rect>(num_img_);
 
   for (size_t img_idx = 0; img_idx < num_img_; img_idx++) {
     image_size_vector_[img_idx] = image_vector_[img_idx].size();
@@ -281,20 +281,20 @@ void StitchingParamGenerator::InitWarper() {
         rect.height - (rect.br().y - y_range.y + y_range.x - rect.tl().y);
     rect.y = y_range.x - rect.y;
     projected_image_roi_vect[i] = rect;
-    projected_image_roi_vect_refined_[i] = rect;
+    projected_image_roi_refined_vect_[i] = rect;
   }
 
   for (int i = 0; i < num_img_ - 1; ++i) {
 
-    Rect rect_left = projected_image_roi_vect_refined_[i];
+    Rect rect_left = projected_image_roi_refined_vect_[i];
     int offset = (projected_image_roi_vect[i].br().x -
         projected_image_roi_vect[i + 1].tl().x) / 2;
     rect_left.width -= offset;
     Rect rect_right = projected_image_roi_vect[i + 1];
     rect_right.width -= offset;
     rect_right.x = offset;
-    projected_image_roi_vect_refined_[i] = rect_left;
-    projected_image_roi_vect_refined_[i + 1] = rect_right;
+    projected_image_roi_refined_vect_[i] = rect_left;
+    projected_image_roi_refined_vect_[i + 1] = rect_right;
   }
 }
 
@@ -345,11 +345,29 @@ void StitchingParamGenerator::GetReprojParams(
     std::vector<cv::UMat>& undist_ymap_vector,
     std::vector<cv::UMat>& reproj_xmap_vector,
     std::vector<cv::UMat>& reproj_ymap_vector,
-    std::vector<cv::Rect>& projected_image_roi_vect_refined) {
+    std::vector<cv::Rect>& projected_image_roi_refined_vect) {
 
   undist_xmap_vector = undist_xmap_vector_;
   undist_ymap_vector = undist_ymap_vector_;
   reproj_xmap_vector = reproj_xmap_vector_;
   reproj_ymap_vector = reproj_ymap_vector_;
-  projected_image_roi_vect_refined = projected_image_roi_vect_refined_;
+  projected_image_roi_refined_vect = projected_image_roi_refined_vect_;
+  std::cout << "[GetReprojParams] projected_image_roi_vect_refined: " << std::endl;
+
+  size_t i = 0;
+  for (auto& roi : projected_image_roi_refined_vect) {
+    std::cout << "[GetReprojParams] roi [" << i << ": "
+              << roi.width << "x"
+              << roi.height << " from ("
+              << roi.x << ", "
+              << roi.y << ")]" << std::endl;
+    i++;
+    if (roi.width < 0 || roi.height < 0 || roi.x < 0 || roi.y < 0) {
+      std::cout << "StitchingParamGenerator did not find a suitable feature point under the current parameters, "
+                << "resulting in an incorrect ROI. "
+                << "Please use \"opencv/stitching_detailed\" to find the correct parameters. "
+                << "(see https://docs.opencv.org/4.8.0/d8/d19/tutorial_stitcher.html)" << std::endl;
+      assert (false);
+    }
+  }
 }
