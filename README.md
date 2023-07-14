@@ -27,7 +27,8 @@ $ ./image-stitching
 * **`Real FPS` is much slower than `FPS`**: `imwrite` takes a lot of time.
 * **Stitching will never stop**: I didn't think about the way to use the dataset before, so I added a `dataset branch`. 
 You can follow [this commit](https://github.com/duchengyao/gpu-based-image-stitching/commit/210fe9a17eb15a92f5d5eb9dc16d53605abbf44b) to modify your code. 
-It will stop after stitching, but the program will not exit. The test set will generate 149 pictures.
+It will stop after stitching, but the program will not exit. The dataset `datasets/air-4cam-mp4` will generate 149 pictures.
+
 Welcome to pull requests!
 
 ## 0x03 Example
