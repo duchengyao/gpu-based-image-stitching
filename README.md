@@ -25,9 +25,9 @@ $ ./image-stitching
 ## 0x02 Known Issue
 
 * **`Real FPS` is much slower than `FPS`**: `imwrite` takes a lot of time.
-* **Stitching will never stop**: I didn't think about the way to use the dataset before, so I added a `dataset branch`. It will stop after stitching, but the program will not exit. The test set will generate 149 pictures.
-* **Wrong resolution changing intrinsic parameter (.yaml)**: See `TODO: Load resolution from camchain.yaml` in `stitching_param_generater.cc`.
-
+* **Stitching will never stop**: I didn't think about the way to use the dataset before, so I added a `dataset branch`. 
+You can follow [this commit](https://github.com/duchengyao/gpu-based-image-stitching/commit/210fe9a17eb15a92f5d5eb9dc16d53605abbf44b) to modify your code. 
+It will stop after stitching, but the program will not exit. The test set will generate 149 pictures.
 Welcome to pull requests!
 
 ## 0x03 Example
