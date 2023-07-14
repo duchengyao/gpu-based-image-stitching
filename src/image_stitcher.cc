@@ -122,6 +122,13 @@ void ImageStitcher::WarpImages(
 //  warp_mutex_vector_[img_idx].unlock();
 
   if (img_idx > 0) {
+    std::cout << "[test 1] "
+              << img_idx << ": "
+              << roi_vect_[img_idx].x << ", "
+              << roi_vect_[img_idx].y << ", "
+              << weightMap_[0].cols << ", "
+              << weightMap_[0].rows << std::endl;
+
     cv::UMat _r = tmp_umat_vect_[img_idx](cv::Rect(
         roi_vect_[img_idx].x,
         roi_vect_[img_idx].y,
@@ -129,6 +136,14 @@ void ImageStitcher::WarpImages(
         weightMap_[0].rows));
 
     warp_mutex_vector_[img_idx - 1].lock();
+
+    std::cout << "[test 2] "
+              << img_idx << ": "
+              << roi_vect_[img_idx - 1].x + roi_vect_[img_idx - 1].width << ", "
+              << roi_vect_[img_idx - 1].y << ", "
+              << weightMap_[0].cols << ", "
+              << weightMap_[0].rows << std::endl;
+
     cv::UMat _l = tmp_umat_vect_[img_idx - 1](cv::Rect(
         roi_vect_[img_idx - 1].x + roi_vect_[img_idx - 1].width,
         roi_vect_[img_idx - 1].y,
@@ -146,6 +161,12 @@ void ImageStitcher::WarpImages(
   for (size_t i = 0; i < img_idx; i++) {
     cols += roi_vect_[i].width;
   }
+
+  std::cout << "[test 3] "
+            << img_idx << ": "
+            << cols << ", "
+            << roi_vect_[img_idx].width << ", "
+            << roi_vect_[img_idx].height << std::endl;
 
   tmp_umat_vect_[img_idx](roi_vect_[img_idx]).copyTo(
       image_concat_umat(cv::Rect(cols, 0, roi_vect_[img_idx].width, roi_vect_[img_idx].height))
