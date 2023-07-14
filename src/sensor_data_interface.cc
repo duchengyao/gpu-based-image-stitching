@@ -13,8 +13,7 @@ SensorDataInterface::SensorDataInterface()
 
 void SensorDataInterface::InitExampleImages() {
   std::string img_dir = "../datasets/cam01/pic_raw/";
-  std::vector<std::string> img_file_name = {
-      "0.jpg", "1.jpg", "2.jpg", "3.jpg", "4.jpg"};
+  std::vector<std::string> img_file_name = {"0.jpg", "1.jpg", "2.jpg", "3.jpg"};
 
   num_img_ = img_file_name.size();
   image_queue_vector_ = std::vector<std::queue<cv::UMat>>(num_img_);
@@ -31,8 +30,7 @@ void SensorDataInterface::InitVideoCapture() {
   std::cout << "Initializing video capture..." << std::endl;
 
   std::string video_dir = "../datasets/air-4cam-mp4/";
-  std::vector<std::string> video_file_name = {
-      "00.mp4", "01.mp4", "02.mp4", "03.mp4"};
+  std::vector<std::string> video_file_name = {"00.mp4", "01.mp4", "02.mp4", "03.mp4"};
 
   num_img_ = video_file_name.size();
   image_queue_vector_ = std::vector<std::queue<cv::UMat>>(num_img_);

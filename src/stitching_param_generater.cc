@@ -56,7 +56,6 @@ StitchingParamGenerator::StitchingParamGenerator(
   InitWarper();
 
   std::cout << "[StitchingParamGenerator] Initialized." << std::endl;
-
 }
 
 void StitchingParamGenerator::InitCameraParam() {
@@ -82,6 +81,7 @@ void StitchingParamGenerator::InitCameraParam() {
                                                   match_conf);
   (*matcher)(features, pairwise_matches);
   matcher->collectGarbage();
+
   // Check if we should save matches graph
   if (save_graph) {
     LOGLN("Saving matches graph...");
@@ -215,13 +215,12 @@ void StitchingParamGenerator::InitWarper() {
       warper_creator->create(static_cast<float>(median_focal_length));
   LOGLN("warped_image_scale: " << median_focal_length);
 
-  Rect rect;
   std::vector<cv::Point> image_point_vect(num_img_);
 
   for (int img_idx = 0; img_idx < num_img_; ++img_idx) {
     Mat_<float> K;
     camera_params_vector_[img_idx].K().convertTo(K, CV_32F);
-    rect = rotation_warper_->buildMaps(image_size_vector_[img_idx], K,
+    Rect rect = rotation_warper_->buildMaps(image_size_vector_[img_idx], K,
                                        camera_params_vector_[img_idx].R,
                                        reproj_xmap_vector_[img_idx],
                                        reproj_ymap_vector_[img_idx]);

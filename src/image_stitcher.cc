@@ -148,7 +148,8 @@ void ImageStitcher::WarpImages(
   }
 
   tmp_umat_vect_[img_idx](roi_vect_[img_idx]).copyTo(
-      image_concat_umat(cv::Rect(cols, 0, roi_vect_[img_idx].width, roi_vect_[img_idx].height)));
+      image_concat_umat(cv::Rect(cols, 0, roi_vect_[img_idx].width, roi_vect_[img_idx].height))
+  );
 
   tn = cv::getTickCount();
   std::cout << "[WarpImages] Warped images " << img_idx << " of " << num_img_ << ". ("
