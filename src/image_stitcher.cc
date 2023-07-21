@@ -124,6 +124,7 @@ void ImageStitcher::WarpImages(
   if (img_idx > 0) {
     std::cout << "[test 1] "
               << img_idx << ": "
+              << tmp_umat_vect_[img_idx].size()
               << roi_vect_[img_idx].x << ", "
               << roi_vect_[img_idx].y << ", "
               << weightMap_[0].cols << ", "
