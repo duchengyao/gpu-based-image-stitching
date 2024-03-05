@@ -42,7 +42,17 @@ void ImageStitcher::SetParams(
 //    undist_xmap_vector[img_idx].copyTo(_);
 //    wrap_vec_.push_back(_);//TODO: Use zeros instead of this fake data.
   }
-  CreateWeightMap(undist_ymap_vector[0].rows, blend_width);
+
+  // Dirty fixed: out of range error.
+  auto blend_height = undist_ymap_vector[0].rows;
+  for (int i = 0; i < num_img_; i++) {
+    if (undist_ymap_vector[i].rows < blend_height)
+      blend_height = undist_ymap_vector[i].rows;
+    if (roi_vect_[i].height < blend_height)
+      blend_height = roi_vect_[i].height;
+  }
+
+  CreateWeightMap(blend_height, blend_width);
   std::cout << "[SetParams] Setting params... Done." << std::endl;
 }
 

@@ -31,18 +31,22 @@ App::App() {
 
   StitchingParamGenerator stitching_param_generator(first_mat_vector);
 
-  stitching_param_generator.GetReprojParams(undist_xmap_vector,
-                                            undist_ymap_vector,
-                                            reproj_xmap_vector,
-                                            reproj_ymap_vector,
-                                            image_roi_vect);
+  stitching_param_generator.GetReprojParams(
+      undist_xmap_vector,
+      undist_ymap_vector,
+      reproj_xmap_vector,
+      reproj_ymap_vector,
+      image_roi_vect
+  );
 
-  image_stitcher_.SetParams(100,
-                            undist_xmap_vector,
-                            undist_ymap_vector,
-                            reproj_xmap_vector,
-                            reproj_ymap_vector,
-                            image_roi_vect);
+  image_stitcher_.SetParams(
+      100,
+      undist_xmap_vector,
+      undist_ymap_vector,
+      reproj_xmap_vector,
+      reproj_ymap_vector,
+      image_roi_vect
+  );
   total_cols_ = 0;
   for (size_t i = 0; i < sensor_data_interface_.num_img_; ++i) {
     total_cols_ += image_roi_vect[i].width;
@@ -56,7 +60,8 @@ App::App() {
   std::vector<cv::UMat> images_warped_vector(sensor_data_interface_.num_img_);
   std::thread record_videos_thread(
       &SensorDataInterface::RecordVideos,
-      &sensor_data_interface_);
+      &sensor_data_interface_
+  );
 
   int64_t t0, t1, t2, t3, tn;
 
@@ -98,8 +103,7 @@ App::App() {
               << 1 / (double(tn - t0) / cv::getTickFrequency()) << " Real FPS." << std::endl;
 
   }
-  record_videos_thread.join();
-
+//  record_videos_thread.join();
 }
 
 int main() {
