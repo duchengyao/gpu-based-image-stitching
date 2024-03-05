@@ -32,7 +32,6 @@ StitchingParamGenerator::StitchingParamGenerator(
   camera_params_vector_ =
       std::vector<cv::detail::CameraParams>(camera_params_vector_);
 
-//      projected_image_bbox_ = std::vector<cv::Rect>(num_img_);
   projected_image_roi_refined_vect_ = std::vector<cv::Rect>(num_img_);
 
   for (size_t img_idx = 0; img_idx < num_img_; img_idx++) {
@@ -66,8 +65,7 @@ void StitchingParamGenerator::InitCameraParam() {
   for (int i = 0; i < num_img_; ++i) {
     computeImageFeatures(finder, image_vector_[i], features[i]);
     features[i].img_idx = i;
-    LOGLN(
-        "Features in image #" << i + 1 << ": " << features[i].keypoints.size());
+    LOGLN("Features in image #" << i + 1 << ": " << features[i].keypoints.size());
   }
   LOGLN("Pairwise matching");
   std::vector<MatchesInfo> pairwise_matches;
